@@ -1,0 +1,14 @@
+{
+  "domain": "mammouth_ai",
+  "name": "Mammouth AI",
+  "codeowners": ["@votre_username"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/votre_username/mammouth-ai-integration",
+  "homeassistant": "2025.8.0",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/votre_username/mammouth-ai-integration/issues",
+  "quality_scale": "silver",
+  "requirements": [],
+  "version": "1.0.0"
+}

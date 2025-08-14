@@ -1,0 +1,25 @@
+# Development requirements for Mammouth AI integration
+
+# Include base requirements
+-r requirements.txt
+
+# Testing framework
+pytest>=8.0.0
+pytest-asyncio>=0.24.0
+pytest-homeassistant-custom-component>=0.13.0
+pytest-cov>=4.0.0
+pytest-aiohttp>=1.0.0
+
+# Code quality and formatting
+black>=23.0.0
+isort>=5.12.0
+flake8>=6.0.0
+pylint>=2.17.0
+mypy>=1.5.0
+
+# Pre-commit hooks
+pre-commit>=3.0.0
+
+# Development utilities
+coverage>=7.0.0
+tox>=4.0.0

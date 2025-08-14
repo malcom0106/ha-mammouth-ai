@@ -1,0 +1,11 @@
+# Configuration de base
+default_config:
+logger:
+  default: info
+  logs:
+    custom_components.mammouth_ai: debug
+    
+# Votre intégration
+mammouth_ai:
+  api_key: "votre_clé_test"
+  base_url: "https://api.mammouth.ai/v1"
