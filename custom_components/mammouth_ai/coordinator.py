@@ -12,8 +12,14 @@ import async_timeout
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator,
-                                                      UpdateFailed)
+from homeassistant.helpers.update_coordinator import (
+    DataUpdateCoordinator,
+    UpdateFailed,
+)
+from homeassistant.exceptions import (
+    ConfigEntryAuthFailed,
+    HomeAssistantError,
+)
 
 from .const import (API_CHAT_COMPLETIONS, CONF_API_KEY, CONF_BASE_URL,
                     CONF_MODEL, CONF_TIMEOUT, DEFAULT_TIMEOUT, DOMAIN,
@@ -70,19 +76,24 @@ class MammouthDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
 
         try:
             async with async_timeout.timeout(self._timeout):
-                async with self._session.get(url, headers=self._headers) as response:
+                async with self._session.get(
+                    url, headers=self._headers
+                ) as response:
                     if response.status == 401:
-                        raise Exception(ERROR_AUTH)
-                    elif response.status != 200:
-                        raise Exception(f"HTTP {response.status}")
+                        raise ConfigEntryAuthFailed(ERROR_AUTH)
+                    if response.status != 200:
+                        raise HomeAssistantError(f"HTTP {response.status}")
 
                     data = await response.json()
-                    return {"status": "healthy", "models": data.get("data", [])}
+                    return {
+                        "status": "healthy",
+                        "models": data.get("data", [])
+                    }
 
         except asyncio.TimeoutError as err:
-            raise Exception(ERROR_TIMEOUT) from err
+            raise HomeAssistantError(ERROR_TIMEOUT) from err
         except aiohttp.ClientError as err:
-            raise Exception(ERROR_CONNECT) from err
+            raise HomeAssistantError(ERROR_CONNECT) from err
 
     async def async_chat_completion(
         self,
@@ -104,25 +115,27 @@ class MammouthDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
                     url, headers=self._headers, json=payload
                 ) as response:
                     if response.status == 401:
-                        raise Exception(ERROR_AUTH)
-                    elif response.status != 200:
+                        raise ConfigEntryAuthFailed(ERROR_AUTH)
+                    if response.status != 200:
                         text = await response.text()
-                        raise Exception(f"HTTP {response.status}: {text}")
+                        raise HomeAssistantError(
+                            f"HTTP {response.status}: {text}"
+                        )
 
                     data = await response.json()
 
                     if "choices" not in data or not data["choices"]:
-                        raise Exception("No response from AI")
+                        raise HomeAssistantError("No response from AI")
 
                     return data["choices"][0]["message"]["content"]
 
         except asyncio.TimeoutError as err:
-            raise Exception(ERROR_TIMEOUT) from err
+            raise HomeAssistantError(ERROR_TIMEOUT) from err
         except aiohttp.ClientError as err:
-            raise Exception(ERROR_CONNECT) from err
+            raise HomeAssistantError(ERROR_CONNECT) from err
         except Exception as err:
             _LOGGER.error("Chat completion failed: %s", err)
-            raise Exception(ERROR_UNKNOWN) from err
+            raise HomeAssistantError(ERROR_UNKNOWN) from err
 
     async def async_shutdown(self) -> None:
         """Shutdown coordinator."""

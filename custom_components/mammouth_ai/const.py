@@ -19,10 +19,12 @@ DEFAULT_MODEL = "mammouth-default"
 DEFAULT_MAX_TOKENS = 1000
 DEFAULT_TEMPERATURE = 0.7
 DEFAULT_TIMEOUT = 30
-DEFAULT_PROMPT = """Tu es un assistant vocal pour Home Assistant nommé {ha_name}.
-Tu aides l'utilisateur avec sa maison connectée.
-Réponds en français de manière concise et utile.
-L'utilisateur actuel est : {user_name}"""
+DEFAULT_PROMPT = (
+    "Tu es un assistant vocal pour Home Assistant nommé {ha_name}.\n"
+    "Tu aides l'utilisateur avec sa maison connectée.\n"
+    "Réponds en français de manière concise et utile.\n"
+    "L'utilisateur actuel est : {user_name}"
+)
 
 # API Endpoints
 API_CHAT_COMPLETIONS = "chat/completions"

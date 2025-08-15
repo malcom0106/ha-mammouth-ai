@@ -2,17 +2,19 @@
 
 from __future__ import annotations
 
-import asyncio
 import logging
 from typing import Literal
 
-from homeassistant.components.conversation import (ConversationEntity,
-                                                   ConversationInput,
-                                                   ConversationResult)
+from homeassistant.components.conversation import (
+    ChatLog,
+    ConversationEntity,
+    ConversationInput,
+    ConversationResult,
+)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import MATCH_ALL
 from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import TemplateError
+from homeassistant.exceptions import HomeAssistantError, TemplateError
 from homeassistant.helpers import intent, template
 
 from .const import CONF_LLM_HASS_API, CONF_PROMPT, DEFAULT_PROMPT, DOMAIN
@@ -48,13 +50,15 @@ class MammouthConversationEntity(ConversationEntity):
         return MATCH_ALL
 
     async def _async_handle_message(
-        self, user_input: ConversationInput
+        self, user_input: ConversationInput, chat_log: ChatLog
     ) -> ConversationResult:
         """Handle a conversation message."""
         intent_response = intent.IntentResponse(language=user_input.language)
 
         # Obtenir le prompt système
-        system_prompt = self._config_entry.options.get(CONF_PROMPT, DEFAULT_PROMPT)
+        system_prompt = self._config_entry.options.get(
+            CONF_PROMPT, DEFAULT_PROMPT
+        )
 
         # Si l'option d'API HA est activée, traiter les templates
         if self._config_entry.options.get(CONF_LLM_HASS_API, False):
@@ -98,13 +102,17 @@ class MammouthConversationEntity(ConversationEntity):
 
         try:
             # Appel à l'API Mammouth
-            response_text = await self.coordinator.async_chat_completion(messages)
+            response_text = await self.coordinator.async_chat_completion(
+                messages
+            )
 
-            _LOGGER.debug("Received response from Mammouth AI: %s", response_text)
+            _LOGGER.debug(
+                "Received response from Mammouth AI: %s", response_text
+            )
 
             intent_response.async_set_speech(response_text)
 
-        except Exception as err:
+        except HomeAssistantError as err:
             _LOGGER.error("Error processing conversation: %s", err)
             intent_response.async_set_error(
                 intent.IntentResponseErrorCode.UNKNOWN,

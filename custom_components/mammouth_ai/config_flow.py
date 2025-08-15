@@ -36,6 +36,10 @@ class MammouthConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
 
+    def is_matching(self, other_flow):
+        """Return True if flow is for same device/entity."""
+        return False
+
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
@@ -63,7 +67,9 @@ class MammouthConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             _LOGGER.exception("Unexpected exception")
             errors["base"] = "unknown"
         else:
-            return self.async_create_entry(title=info["title"], data=user_input)
+            return self.async_create_entry(
+                title=info["title"], data=user_input
+            )
 
         return self.async_show_form(
             step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
@@ -122,7 +128,9 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                     ): cv.positive_int,
                     vol.Optional(
                         CONF_LLM_HASS_API,
-                        default=self.config_entry.options.get(CONF_LLM_HASS_API, True),
+                        default=self.config_entry.options.get(
+                            CONF_LLM_HASS_API, True
+                        ),
                     ): cv.boolean,
                 }
             ),
@@ -138,7 +146,9 @@ class InvalidAuth(Exception):
     """Error to indicate there is invalid auth."""
 
 
-async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str, Any]:
+async def validate_input(
+    hass: HomeAssistant, data: dict[str, Any]
+) -> dict[str, Any]:
     """Validate the user input allows us to connect."""
     session = async_get_clientsession(hass)
 
