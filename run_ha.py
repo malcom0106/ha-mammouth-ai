@@ -11,6 +11,7 @@ async def main():
     hass = core.HomeAssistant()
     
     config_dir = Path("./config")
+    print(config_dir)
     await hass.async_add_executor_job(config.load_yaml_config_file, 
                                      config_dir / "configuration.yaml")
     

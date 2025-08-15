@@ -1,4 +1,5 @@
 """Data update coordinator for Mammouth AI."""
+
 from __future__ import annotations
 
 import asyncio
@@ -11,23 +12,15 @@ import async_timeout
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator,
+                                                      UpdateFailed)
 
-from .const import (
-    DOMAIN,
-    API_CHAT_COMPLETIONS,
-    CONF_API_KEY,
-    CONF_BASE_URL,
-    CONF_MODEL,
-    CONF_TIMEOUT,
-    DEFAULT_TIMEOUT,
-    ERROR_AUTH,
-    ERROR_CONNECT,
-    ERROR_TIMEOUT,
-    ERROR_UNKNOWN,
-)
+from .const import (API_CHAT_COMPLETIONS, CONF_API_KEY, CONF_BASE_URL,
+                    CONF_MODEL, CONF_TIMEOUT, DEFAULT_TIMEOUT, DOMAIN,
+                    ERROR_AUTH, ERROR_CONNECT, ERROR_TIMEOUT, ERROR_UNKNOWN)
 
 _LOGGER = logging.getLogger(__name__)
+
 
 class MammouthDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
     """Class to manage fetching data from Mammouth AI."""
@@ -41,7 +34,7 @@ class MammouthDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
         self._base_url = entry.data[CONF_BASE_URL]
         self._model = entry.data[CONF_MODEL]
         self._timeout = entry.options.get(CONF_TIMEOUT, DEFAULT_TIMEOUT)
-        
+
         self._session = async_get_clientsession(hass)
         self._headers = {
             "Authorization": f"Bearer {self._api_key}",
@@ -74,7 +67,7 @@ class MammouthDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
     async def _async_health_check(self) -> Dict[str, Any]:
         """Perform health check."""
         url = f"{self._base_url.rstrip('/')}/models"
-        
+
         try:
             async with async_timeout.timeout(self._timeout):
                 async with self._session.get(url, headers=self._headers) as response:
@@ -82,10 +75,10 @@ class MammouthDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
                         raise Exception(ERROR_AUTH)
                     elif response.status != 200:
                         raise Exception(f"HTTP {response.status}")
-                    
+
                     data = await response.json()
                     return {"status": "healthy", "models": data.get("data", [])}
-                    
+
         except asyncio.TimeoutError as err:
             raise Exception(ERROR_TIMEOUT) from err
         except aiohttp.ClientError as err:
@@ -98,33 +91,31 @@ class MammouthDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
     ) -> str:
         """Get chat completion from Mammouth AI."""
         url = f"{self._base_url.rstrip('/')}/{API_CHAT_COMPLETIONS}"
-        
+
         payload = {
             "model": self._model,
             "messages": messages,
             **kwargs,
         }
-        
+
         try:
             async with async_timeout.timeout(self._timeout):
                 async with self._session.post(
-                    url, 
-                    headers=self._headers, 
-                    json=payload
+                    url, headers=self._headers, json=payload
                 ) as response:
                     if response.status == 401:
                         raise Exception(ERROR_AUTH)
                     elif response.status != 200:
                         text = await response.text()
                         raise Exception(f"HTTP {response.status}: {text}")
-                    
+
                     data = await response.json()
-                    
+
                     if "choices" not in data or not data["choices"]:
                         raise Exception("No response from AI")
-                    
+
                     return data["choices"][0]["message"]["content"]
-                    
+
         except asyncio.TimeoutError as err:
             raise Exception(ERROR_TIMEOUT) from err
         except aiohttp.ClientError as err:
@@ -137,4 +128,3 @@ class MammouthDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
         """Shutdown coordinator."""
         _LOGGER.debug("Shutting down Mammouth AI coordinator")
         # Cleanup if needed
-

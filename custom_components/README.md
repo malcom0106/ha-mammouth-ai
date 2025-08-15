@@ -10,16 +10,36 @@
 
 [![Community Forum][forum-shield]][forum]
 
-Intégration de l'agent IA Mammouth.ai dans Home Assistant pour des conversations naturelles et intelligentes.
+Intégration **Mammouth AI** dans Home Assistant - **L'accès unifié à TOUS les modèles d'IA** (OpenAI, Claude, Gemini, Llama, Mistral...) avec une seule clé API.
 
 ![Mammouth AI Logo](https://raw.githubusercontent.com/votre-username/ha-mammouth-ai/main/images/logo.png)
 
-## ✨ Fonctionnalités
+## 🌟 Pourquoi Mammouth AI ?
 
-- 🗣️ **Conversations naturelles** avec l'agent IA Mammouth
-- 🏠 **Contrôle domotique** via commandes vocales intelligentes
+**Mammouth AI** révolutionne l'IA conversationnelle en offrant **l'accès unifié à TOUS les grands modèles** :
+
+### 🎯 Tous les Modèles en Un
+- **OpenAI** : GPT-4, GPT-4 Turbo, GPT-3.5
+- **Anthropic** : Claude 3.5 Sonnet, Claude 3 Opus, Claude 3 Haiku  
+- **Google** : Gemini Pro, Gemini Ultra, PaLM 2
+- **Meta** : Llama 2, Code Llama, Llama 3
+- **Mistral AI** : Mistral 7B, Mixtral 8x7B, Mistral Large
+- **Cohere** : Command, Command-Light
+- **Et bien d'autres modèles...**
+
+### 💡 Avantages Uniques
+- ✅ **Une seule clé API** pour tous les modèles
+- ✅ **Prix optimisés** et transparents
+- ✅ **Pas de vendor lock-in** - changez de modèle instantanément
+- ✅ **Performance uniforme** avec API standardisée
+- ✅ **Basculement intelligent** selon vos besoins
+
+## ✨ Fonctionnalités Home Assistant
+
+- 🗣️ **Conversations naturelles** avec tous les modèles d'IA
+- 🏠 **Contrôle domotique intelligent** via commandes vocales
 - 🔄 **Streaming en temps réel** pour des réponses fluides
-- 🌍 **Support multilingue** (Français, Anglais, etc.)
+- 🌍 **Support multilingue** (7 langues : FR, EN, ES, DE, IT, PT, NL)
 - ⚙️ **Configuration flexible** des paramètres IA
 - 📱 **Interface utilisateur** intégrée dans Home Assistant
 - 🔐 **Sécurisé** avec authentification API
@@ -166,7 +186,7 @@ python3.12 -m venv venv_ha2025
 source venv_ha2025/bin/activate  # Linux/Mac
 # venv_ha2025\Scripts\activate   # Windows
 
-# Installer Home Assistant 2025.x et dépendances
+# Installer Home Assistant 2025.7.30+ et dépendances
 pip install -r requirements.txt
 pip install -r requirements-dev.txt
 ```

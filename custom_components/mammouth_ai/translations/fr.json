@@ -1,0 +1,36 @@
+{
+  "title": "Mammouth AI",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configurer Mammouth AI",
+        "description": "Configurez votre intégration Mammouth AI",
+        "data": {
+          "api_key": "Clé API",
+          "base_url": "URL de base",
+          "model": "Modèle"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Impossible de se connecter à l'API",
+      "invalid_auth": "Identifiants d'authentification invalides",
+      "unknown": "Une erreur inattendue s'est produite"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Configurer les Options",
+        "description": "Configurez les options avancées pour Mammouth AI",
+        "data": {
+          "prompt": "Prompt Système",
+          "max_tokens": "Nombre maximum de tokens",
+          "temperature": "Température",
+          "timeout": "Délai d'attente (secondes)",
+          "llm_hass_api": "Activer l'accès à l'API Home Assistant"
+        }
+      }
+    }
+  }
+}
