@@ -4,6 +4,7 @@
   "codeowners": [
     "@malcom0106"
   ],
+  "conversation": true,
   "config_flow": true,
   "dependencies": [],
   "documentation": "https://github.com/malcom0106/mammouth-ai-integration",
@@ -12,5 +13,5 @@
   "issue_tracker": "https://github.com/malcom0106/mammouth-ai-integration/issues",
   "quality_scale": "silver",
   "requirements": [],
-  "version": "1.0.1"
+  "version": "1.0.2"
 }

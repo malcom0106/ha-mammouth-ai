@@ -28,12 +28,11 @@ class MammouthConversationEntity(ConversationEntity):
 
     def __init__(
         self,
-        hass: HomeAssistant,
         coordinator: MammouthDataUpdateCoordinator,
         config_entry: ConfigEntry,
     ) -> None:
         """Initialize the entity."""
-        super().__init__(hass, config_entry.entry_id)
+        super().__init__()
         self.coordinator = coordinator
         self._config_entry = config_entry
         self._attr_name = f"Mammouth AI ({config_entry.title})"
@@ -61,7 +60,7 @@ class MammouthConversationEntity(ConversationEntity):
         )
 
         # Si l'option d'API HA est activée, traiter les templates
-        if self._config_entry.options.get(CONF_LLM_HASS_API, False):
+        if self._config_entry.options.get(CONF_LLM_HASS_API, True):
             try:
                 # Obtenir les informations utilisateur
                 user_name = "Utilisateur"
@@ -73,11 +72,12 @@ class MammouthConversationEntity(ConversationEntity):
                         user_name = user.name
 
                 # Rendre le template avec les variables HA
+                ha_name = self.hass.config.location_name or "Jean Claude"
                 system_prompt = template.Template(
                     system_prompt, self.hass
                 ).async_render(
                     {
-                        "ha_name": self.hass.config.location_name,
+                        "ha_name": ha_name,
                         "user_name": user_name,
                     },
                     parse_result=False,
@@ -131,6 +131,6 @@ async def async_setup_entry(
 ) -> None:
     """Set up Mammouth AI conversation platform."""
     coordinator = hass.data[DOMAIN][config_entry.entry_id]
-    entity = MammouthConversationEntity(hass, coordinator, config_entry)
+    entity = MammouthConversationEntity(coordinator, config_entry)
     async_add_entities([entity])
     _LOGGER.debug("Mammouth AI conversation entity added")
