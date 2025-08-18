@@ -10,15 +10,32 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.const import CONF_API_KEY
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.data_entry_flow import FlowResult
+from homeassistant.config_entries import ConfigFlowResult
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from .const import (CONF_BASE_URL, CONF_LLM_HASS_API, CONF_MAX_TOKENS,
-                    CONF_MODEL, CONF_PROMPT, CONF_TEMPERATURE, CONF_TIMEOUT,
-                    DEFAULT_BASE_URL, DEFAULT_MAX_TOKENS, DEFAULT_MODEL,
-                    DEFAULT_PROMPT, DEFAULT_TEMPERATURE, DEFAULT_TIMEOUT,
-                    DOMAIN)
+from .const import (
+    CONF_BASE_URL,
+    CONF_ENABLE_MEMORY,
+    CONF_LLM_HASS_API,
+    CONF_MAX_MESSAGES,
+    CONF_MAX_TOKENS,
+    CONF_MEMORY_TIMEOUT,
+    CONF_MODEL,
+    CONF_PROMPT,
+    CONF_TEMPERATURE,
+    CONF_TIMEOUT,
+    DEFAULT_BASE_URL,
+    DEFAULT_ENABLE_MEMORY,
+    DEFAULT_MAX_MESSAGES,
+    DEFAULT_MAX_TOKENS,
+    DEFAULT_MEMORY_TIMEOUT,
+    DEFAULT_MODEL,
+    DEFAULT_PROMPT,
+    DEFAULT_TEMPERATURE,
+    DEFAULT_TIMEOUT,
+    DOMAIN,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -42,7 +59,7 @@ class MammouthConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Handle the initial step."""
         if user_input is None:
             return self.async_show_form(
@@ -67,9 +84,7 @@ class MammouthConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             _LOGGER.exception("Unexpected exception")
             errors["base"] = "unknown"
         else:
-            return self.async_create_entry(
-                title=info["title"], data=user_input
-            )
+            return self.async_create_entry(title=info["title"], data=user_input)
 
         return self.async_show_form(
             step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
@@ -93,7 +108,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Manage the options."""
         if user_input is not None:
             return self.async_create_entry(title="", data=user_input)
@@ -128,10 +143,26 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                     ): cv.positive_int,
                     vol.Optional(
                         CONF_LLM_HASS_API,
+                        default=self.config_entry.options.get(CONF_LLM_HASS_API, True),
+                    ): cv.boolean,
+                    vol.Optional(
+                        CONF_ENABLE_MEMORY,
                         default=self.config_entry.options.get(
-                            CONF_LLM_HASS_API, True
+                            CONF_ENABLE_MEMORY, DEFAULT_ENABLE_MEMORY
                         ),
                     ): cv.boolean,
+                    vol.Optional(
+                        CONF_MAX_MESSAGES,
+                        default=self.config_entry.options.get(
+                            CONF_MAX_MESSAGES, DEFAULT_MAX_MESSAGES
+                        ),
+                    ): cv.positive_int,
+                    vol.Optional(
+                        CONF_MEMORY_TIMEOUT,
+                        default=self.config_entry.options.get(
+                            CONF_MEMORY_TIMEOUT, DEFAULT_MEMORY_TIMEOUT
+                        ),
+                    ): cv.positive_int,
                 }
             ),
         )
@@ -146,9 +177,7 @@ class InvalidAuth(Exception):
     """Error to indicate there is invalid auth."""
 
 
-async def validate_input(
-    hass: HomeAssistant, data: dict[str, Any]
-) -> dict[str, Any]:
+async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str, Any]:
     """Validate the user input allows us to connect."""
     session = async_get_clientsession(hass)
 

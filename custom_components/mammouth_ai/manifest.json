@@ -7,11 +7,11 @@
   "conversation": true,
   "config_flow": true,
   "dependencies": [],
-  "documentation": "https://github.com/malcom0106/mammouth-ai-integration",
+  "documentation": "https://github.com/malcom0106/ha-mammouth-ai",
   "homeassistant": "2025.8.0",
   "iot_class": "cloud_polling",
-  "issue_tracker": "https://github.com/malcom0106/mammouth-ai-integration/issues",
+  "issue_tracker": "https://github.com/malcom0106/ha-mammouth-ai/issues",
   "quality_scale": "silver",
   "requirements": [],
-  "version": "1.0.2"
+  "version": "1.1.0"
 }

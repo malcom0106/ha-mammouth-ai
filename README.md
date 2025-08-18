@@ -40,7 +40,7 @@ Cette intégration transforme votre Home Assistant en **assistant conversationne
 1. Ouvrez HACS dans Home Assistant
 2. Cliquez sur "Intégrations"
 3. Cliquez sur le menu ⋮ puis "Dépôts personnalisés"
-4. Ajoutez cette URL : `https://github.com/malcom0106/mammouth-ai-integration`
+4. Ajoutez cette URL : `https://github.com/malcom0106/ha-mammouth-ai`
 5. Recherchez "Mammouth AI" et installez
 6. Redémarrez Home Assistant
 

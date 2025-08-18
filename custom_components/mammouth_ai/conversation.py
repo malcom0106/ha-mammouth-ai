@@ -55,9 +55,7 @@ class MammouthConversationEntity(ConversationEntity):
         intent_response = intent.IntentResponse(language=user_input.language)
 
         # Obtenir le prompt système
-        system_prompt = self._config_entry.options.get(
-            CONF_PROMPT, DEFAULT_PROMPT
-        )
+        system_prompt = self._config_entry.options.get(CONF_PROMPT, DEFAULT_PROMPT)
 
         # Si l'option d'API HA est activée, traiter les templates
         if self._config_entry.options.get(CONF_LLM_HASS_API, True):
@@ -101,14 +99,17 @@ class MammouthConversationEntity(ConversationEntity):
         _LOGGER.debug("Sending request to Mammouth AI: %s", user_input.text)
 
         try:
-            # Appel à l'API Mammouth
-            response_text = await self.coordinator.async_chat_completion(
-                messages
+            # Obtenir l'ID utilisateur pour la mémoire
+            user_id = None
+            if user_input.context and user_input.context.user_id:
+                user_id = user_input.context.user_id
+
+            # Appel à l'API Mammouth avec mémoire
+            response_text = await self.coordinator.async_chat_completion_with_memory(
+                messages, user_id=user_id, conversation_id=user_input.conversation_id
             )
 
-            _LOGGER.debug(
-                "Received response from Mammouth AI: %s", response_text
-            )
+            _LOGGER.debug("Received response from Mammouth AI: %s", response_text)
 
             intent_response.async_set_speech(response_text)
 

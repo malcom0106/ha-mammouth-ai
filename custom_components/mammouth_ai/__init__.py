@@ -27,9 +27,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         await coordinator.async_validate_connection()
     except Exception as err:
         _LOGGER.error("Failed to connect to Mammouth AI: %s", err)
-        raise ConfigEntryNotReady(
-            f"Unable to connect to Mammouth AI: {err}"
-        ) from err
+        raise ConfigEntryNotReady(f"Unable to connect to Mammouth AI: {err}") from err
 
     # Stockage du coordinator
     hass.data.setdefault(DOMAIN, {})
@@ -50,9 +48,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     _LOGGER.debug("Unloading Mammouth AI integration")
 
     # Unload platforms
-    unload_ok = await hass.config_entries.async_unload_platforms(
-        entry, PLATFORMS
-    )
+    unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unload_ok:
         # Nettoyer les données
         coordinator = hass.data[DOMAIN].pop(entry.entry_id, None)
@@ -62,8 +58,6 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return unload_ok
 
 
-async def _async_update_listener(
-    hass: HomeAssistant, entry: ConfigEntry
-) -> None:
+async def _async_update_listener(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Update listener for options changes."""
     await hass.config_entries.async_reload(entry.entry_id)

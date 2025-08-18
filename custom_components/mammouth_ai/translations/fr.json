@@ -4,16 +4,16 @@
     "step": {
       "user": {
         "title": "Configurer Mammouth AI",
-        "description": "Configurez votre intÈgration Mammouth AI",
+        "description": "Configurez votre int√©gration Mammouth AI",
         "data": {
-          "api_key": "ClÈ API",
+          "api_key": "Cl√© API",
           "base_url": "URL de base",
-          "model": "ModËle"
+          "model": "Mod√®le"
         }
       }
     },
     "error": {
-      "cannot_connect": "Impossible de se connecter ‡ l'API",
+      "cannot_connect": "Impossible de se connecter √† l'API",
       "invalid_auth": "Identifiants d'authentification invalides",
       "unknown": "Une erreur inattendue s'est produite"
     }
@@ -22,13 +22,16 @@
     "step": {
       "init": {
         "title": "Configurer les Options",
-        "description": "Configurez les options avancÈes pour Mammouth AI",
+        "description": "Configurez les options avanc√©es pour Mammouth AI",
         "data": {
-          "prompt": "Prompt SystËme",
+          "prompt": "Prompt Syst√®me",
           "max_tokens": "Nombre maximum de tokens",
-          "temperature": "TempÈrature",
-          "timeout": "DÈlai d'attente (secondes)",
-          "llm_hass_api": "Activer l'accËs ‡ l'API Home Assistant"
+          "temperature": "Temp√©rature",
+          "timeout": "D√©lai d'attente (secondes)",
+          "llm_hass_api": "Activer l'acc√®s √† l'API Home Assistant",
+          "enable_memory": "Activer la m√©moire conversationnelle",
+          "max_messages": "Nombre maximum de messages en m√©moire",
+          "memory_timeout": "Dur√©e de vie de la m√©moire (heures)"
         }
       }
     }
