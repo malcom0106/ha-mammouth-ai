@@ -55,7 +55,10 @@ class MammouthConversationEntity(ConversationEntity):
         system_prompt = self._config_entry.options.get(CONF_PROMPT, DEFAULT_PROMPT)
 
         # Si l'option d'API HA est activée, traiter les templates
-        if self._config_entry.options.get(CONF_LLM_HASS_API, True):
+        llm_hass_api_enabled = self._config_entry.options.get(CONF_LLM_HASS_API, True)
+        _LOGGER.debug("LLM HASS API enabled: %s", llm_hass_api_enabled)
+        
+        if llm_hass_api_enabled:
             try:
                 # Obtenir les informations utilisateur
                 user_name = "Utilisateur"
@@ -71,7 +74,10 @@ class MammouthConversationEntity(ConversationEntity):
 
                 # Obtenir les états des entités pour le contexte
                 exposed_entities = []
-                for state in self.hass.states.async_all():
+                all_states = self.hass.states.async_all()
+                _LOGGER.debug("Total entities in HA: %d", len(all_states))
+                
+                for state in all_states:
                     if state.domain in [
                         "sensor",
                         "binary_sensor",
@@ -94,17 +100,26 @@ class MammouthConversationEntity(ConversationEntity):
                                 "attributes": dict(state.attributes),
                             }
                         )
+                
+                _LOGGER.debug("Exposed entities count: %d", len(exposed_entities))
+                if exposed_entities:
+                    _LOGGER.debug("First few exposed entities: %s", 
+                                  [e["entity_id"] for e in exposed_entities[:5]])
 
+                template_vars = {
+                    "ha_name": ha_name,
+                    "user_name": user_name,
+                    "exposed_entities": exposed_entities,
+                }
+                _LOGGER.debug("Template variables: ha_name=%s, user_name=%s, entities_count=%d", 
+                              ha_name, user_name, len(exposed_entities))
+                
                 system_prompt = template.Template(
                     system_prompt, self.hass
-                ).async_render(
-                    {
-                        "ha_name": ha_name,
-                        "user_name": user_name,
-                        "exposed_entities": exposed_entities,
-                    },
-                    parse_result=False,
-                )
+                ).async_render(template_vars, parse_result=False)
+                
+                _LOGGER.debug("Rendered system prompt length: %d characters", len(system_prompt))
+                _LOGGER.debug("Rendered system prompt (first 500 chars): %s", system_prompt[:500])
             except TemplateError as err:
                 _LOGGER.error("Error rendering prompt template: %s", err)
                 intent_response.async_set_error(

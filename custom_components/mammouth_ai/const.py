@@ -26,10 +26,10 @@ DEFAULT_ENABLE_MEMORY = True
 DEFAULT_MAX_MESSAGES = 10
 DEFAULT_MEMORY_TIMEOUT = 24
 DEFAULT_PROMPT = (
-    "Tu es un assistant vocal pour Home Assistant nommé {ha_name}.\n"
+    "Tu es un assistant vocal pour Home Assistant nommé {{ ha_name }}.\n"
     "Tu aides l'utilisateur avec sa maison connectée.\n"
     "Réponds en français de manière concise et utile.\n"
-    "L'utilisateur actuel est : {user_name}\n\n"
+    "L'utilisateur actuel est : {{ user_name }}\n\n"
     "Voici les entités disponibles dans cette maison :\n"
     "{% for entity in exposed_entities %}"
     "- {{ entity.name }} ({{ entity.entity_id }}) : {{ entity.state }}{{ entity.unit }}"
