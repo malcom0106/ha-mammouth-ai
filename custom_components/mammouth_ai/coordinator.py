@@ -13,15 +13,27 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed, HomeAssistantError
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator,
-                                                      UpdateFailed)
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import (API_CHAT_COMPLETIONS, CONF_API_KEY, CONF_BASE_URL,
-                    CONF_ENABLE_MEMORY, CONF_MAX_MESSAGES, CONF_MEMORY_TIMEOUT,
-                    CONF_MODEL, CONF_TIMEOUT, DEFAULT_ENABLE_MEMORY,
-                    DEFAULT_MAX_MESSAGES, DEFAULT_MEMORY_TIMEOUT,
-                    DEFAULT_TIMEOUT, DOMAIN, ERROR_AUTH, ERROR_CONNECT,
-                    ERROR_TIMEOUT, ERROR_UNKNOWN)
+from .const import (
+    API_CHAT_COMPLETIONS,
+    CONF_API_KEY,
+    CONF_BASE_URL,
+    CONF_ENABLE_MEMORY,
+    CONF_MAX_MESSAGES,
+    CONF_MEMORY_TIMEOUT,
+    CONF_MODEL,
+    CONF_TIMEOUT,
+    DEFAULT_ENABLE_MEMORY,
+    DEFAULT_MAX_MESSAGES,
+    DEFAULT_MEMORY_TIMEOUT,
+    DEFAULT_TIMEOUT,
+    DOMAIN,
+    ERROR_AUTH,
+    ERROR_CONNECT,
+    ERROR_TIMEOUT,
+    ERROR_UNKNOWN,
+)
 
 _LOGGER = logging.getLogger(__name__)
 

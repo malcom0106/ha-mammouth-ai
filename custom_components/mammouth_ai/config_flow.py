@@ -14,13 +14,36 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from .const import (CONF_BASE_URL, CONF_ENABLE_MEMORY, CONF_LLM_HASS_API,
-                    CONF_MAX_MESSAGES, CONF_MAX_TOKENS, CONF_MEMORY_TIMEOUT,
-                    CONF_MODEL, CONF_PROMPT, CONF_TEMPERATURE, CONF_TIMEOUT,
-                    DEFAULT_BASE_URL, DEFAULT_ENABLE_MEMORY,
-                    DEFAULT_MAX_MESSAGES, DEFAULT_MAX_TOKENS,
-                    DEFAULT_MEMORY_TIMEOUT, DEFAULT_MODEL, DEFAULT_PROMPT,
-                    DEFAULT_TEMPERATURE, DEFAULT_TIMEOUT, DOMAIN)
+from .const import (
+    CONF_BASE_URL,
+    CONF_ENABLE_MEMORY,
+    CONF_ENTITY_DOMAINS,
+    CONF_LLM_HASS_API,
+    CONF_MAX_ENTITIES,
+    CONF_MAX_MESSAGES,
+    CONF_MAX_TOKENS,
+    CONF_MEMORY_TIMEOUT,
+    CONF_MINIMAL_ATTRIBUTES,
+    CONF_MODEL,
+    CONF_PROMPT,
+    CONF_SMART_FILTERING,
+    CONF_TEMPERATURE,
+    CONF_TIMEOUT,
+    DEFAULT_BASE_URL,
+    DEFAULT_ENABLE_MEMORY,
+    DEFAULT_ENTITY_DOMAINS,
+    DEFAULT_MAX_ENTITIES,
+    DEFAULT_MAX_MESSAGES,
+    DEFAULT_MAX_TOKENS,
+    DEFAULT_MEMORY_TIMEOUT,
+    DEFAULT_MINIMAL_ATTRIBUTES,
+    DEFAULT_MODEL,
+    DEFAULT_PROMPT,
+    DEFAULT_SMART_FILTERING,
+    DEFAULT_TEMPERATURE,
+    DEFAULT_TIMEOUT,
+    DOMAIN,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -147,6 +170,43 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                             CONF_MEMORY_TIMEOUT, DEFAULT_MEMORY_TIMEOUT
                         ),
                     ): cv.positive_int,
+                    vol.Optional(
+                        CONF_MAX_ENTITIES,
+                        default=self.config_entry.options.get(
+                            CONF_MAX_ENTITIES, DEFAULT_MAX_ENTITIES
+                        ),
+                    ): cv.positive_int,
+                    vol.Optional(
+                        CONF_ENTITY_DOMAINS,
+                        default=self.config_entry.options.get(
+                            CONF_ENTITY_DOMAINS, DEFAULT_ENTITY_DOMAINS
+                        ),
+                    ): cv.multi_select(
+                        {
+                            "sensor": "Sensor",
+                            "binary_sensor": "Binary Sensor",
+                            "light": "Light",
+                            "switch": "Switch",
+                            "climate": "Climate",
+                            "cover": "Cover",
+                            "lock": "Lock",
+                            "camera": "Camera",
+                            "media_player": "Media Player",
+                            "vacuum": "Vacuum",
+                        }
+                    ),
+                    vol.Optional(
+                        CONF_SMART_FILTERING,
+                        default=self.config_entry.options.get(
+                            CONF_SMART_FILTERING, DEFAULT_SMART_FILTERING
+                        ),
+                    ): cv.boolean,
+                    vol.Optional(
+                        CONF_MINIMAL_ATTRIBUTES,
+                        default=self.config_entry.options.get(
+                            CONF_MINIMAL_ATTRIBUTES, DEFAULT_MINIMAL_ATTRIBUTES
+                        ),
+                    ): cv.boolean,
                 }
             ),
         )
