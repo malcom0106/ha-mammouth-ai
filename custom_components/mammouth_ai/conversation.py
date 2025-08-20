@@ -68,12 +68,40 @@ class MammouthConversationEntity(ConversationEntity):
 
                 # Rendre le template avec les variables HA
                 ha_name = self.hass.config.location_name or "Jean Claude"
+
+                # Obtenir les états des entités pour le contexte
+                exposed_entities = []
+                for state in self.hass.states.async_all():
+                    if state.domain in [
+                        "sensor",
+                        "binary_sensor",
+                        "light",
+                        "switch",
+                        "climate",
+                        "cover",
+                    ]:
+                        exposed_entities.append(
+                            {
+                                "entity_id": state.entity_id,
+                                "name": state.attributes.get(
+                                    "friendly_name", state.entity_id
+                                ),
+                                "state": state.state,
+                                "unit": state.attributes.get("unit_of_measurement", ""),
+                                "device_class": state.attributes.get(
+                                    "device_class", ""
+                                ),
+                                "attributes": dict(state.attributes),
+                            }
+                        )
+
                 system_prompt = template.Template(
                     system_prompt, self.hass
                 ).async_render(
                     {
                         "ha_name": ha_name,
                         "user_name": user_name,
+                        "exposed_entities": exposed_entities,
                     },
                     parse_result=False,
                 )
