@@ -5,12 +5,9 @@ from __future__ import annotations
 import logging
 from typing import Literal
 
-from homeassistant.components.conversation import (
-    ChatLog,
-    ConversationEntity,
-    ConversationInput,
-    ConversationResult,
-)
+from homeassistant.components.conversation import (ChatLog, ConversationEntity,
+                                                   ConversationInput,
+                                                   ConversationResult)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import MATCH_ALL
 from homeassistant.core import HomeAssistant

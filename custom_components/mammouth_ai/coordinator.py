@@ -13,27 +13,15 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed, HomeAssistantError
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator,
+                                                      UpdateFailed)
 
-from .const import (
-    API_CHAT_COMPLETIONS,
-    CONF_API_KEY,
-    CONF_BASE_URL,
-    CONF_ENABLE_MEMORY,
-    CONF_MAX_MESSAGES,
-    CONF_MEMORY_TIMEOUT,
-    CONF_MODEL,
-    CONF_TIMEOUT,
-    DEFAULT_ENABLE_MEMORY,
-    DEFAULT_MAX_MESSAGES,
-    DEFAULT_MEMORY_TIMEOUT,
-    DEFAULT_TIMEOUT,
-    DOMAIN,
-    ERROR_AUTH,
-    ERROR_CONNECT,
-    ERROR_TIMEOUT,
-    ERROR_UNKNOWN,
-)
+from .const import (API_CHAT_COMPLETIONS, CONF_API_KEY, CONF_BASE_URL,
+                    CONF_ENABLE_MEMORY, CONF_MAX_MESSAGES, CONF_MEMORY_TIMEOUT,
+                    CONF_MODEL, CONF_TIMEOUT, DEFAULT_ENABLE_MEMORY,
+                    DEFAULT_MAX_MESSAGES, DEFAULT_MEMORY_TIMEOUT,
+                    DEFAULT_TIMEOUT, DOMAIN, ERROR_AUTH, ERROR_CONNECT,
+                    ERROR_TIMEOUT, ERROR_UNKNOWN)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -117,9 +105,17 @@ class MammouthDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
         self, user_id: Optional[str] = None, conversation_id: Optional[str] = None
     ) -> str:
         """Generate conversation key."""
-        if conversation_id:
-            return f"{user_id}_{conversation_id}"
-        return user_id or "default"
+        # Pour maintenir une continuité de conversation par utilisateur,
+        # nous utilisons uniquement l'user_id comme clé principale
+        # Cela évite les interruptions de mémoire lors de nouvelles sessions
+        key = user_id or "default"
+        _LOGGER.debug(
+            "Generated conversation key: %s (user_id=%s, conversation_id=%s)",
+            key,
+            user_id,
+            conversation_id,
+        )
+        return key
 
     def _cleanup_expired_conversations(self) -> None:
         """Clean up expired conversation history."""
@@ -152,7 +148,7 @@ class MammouthDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
         # Garder les derniers messages jusqu'à la limite
         if len(other_messages) > (self._max_messages - len(system_messages)):
             other_messages = other_messages[
-                -(self._max_messages - len(system_messages)):
+                -(self._max_messages - len(system_messages)) :
             ]
 
         return system_messages + other_messages
@@ -165,7 +161,15 @@ class MammouthDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
         **kwargs: Any,
     ) -> str:
         """Get chat completion from Mammouth AI with conversation memory."""
+        _LOGGER.debug(
+            "Memory enabled: %s, user_id: %s, conversation_id: %s",
+            self._enable_memory,
+            user_id,
+            conversation_id,
+        )
+
         if not self._enable_memory:
+            _LOGGER.debug("Memory disabled, using direct chat completion")
             return await self.async_chat_completion(messages, **kwargs)
 
         # Nettoyer les conversations expirées
@@ -177,17 +181,27 @@ class MammouthDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
         # Récupérer l'historique existant
         if conv_key not in self._conversation_history:
             self._conversation_history[conv_key] = []
+            _LOGGER.debug("Created new conversation history for key: %s", conv_key)
+        else:
+            _LOGGER.debug(
+                "Found existing conversation history for key: %s with %d messages",
+                conv_key,
+                len(self._conversation_history[conv_key]),
+            )
 
         # Ajouter les nouveaux messages à l'historique
         conversation_messages = self._conversation_history[conv_key].copy()
 
-        # Ajouter le message système s'il n'existe pas déjà
+        # Ajouter ou mettre à jour le message système
         system_message = next(
             (msg for msg in messages if msg.get("role") == "system"), None
         )
-        if system_message and not any(
-            msg.get("role") == "system" for msg in conversation_messages
-        ):
+        if system_message:
+            # Supprimer l'ancien message système s'il existe
+            conversation_messages = [
+                msg for msg in conversation_messages if msg.get("role") != "system"
+            ]
+            # Insérer le nouveau message système au début
             conversation_messages.insert(0, system_message)
 
         # Ajouter le nouveau message utilisateur
@@ -196,6 +210,15 @@ class MammouthDataUpdateCoordinator(DataUpdateCoordinator[Dict[str, Any]]):
         )
         if user_message:
             conversation_messages.append(user_message)
+            _LOGGER.debug(
+                "Adding user message to conversation %s: %s",
+                conv_key,
+                (
+                    user_message["content"][:100] + "..."
+                    if len(user_message["content"]) > 100
+                    else user_message["content"]
+                ),
+            )
 
         # Tronquer l'historique si nécessaire
         conversation_messages = self._truncate_conversation_history(
