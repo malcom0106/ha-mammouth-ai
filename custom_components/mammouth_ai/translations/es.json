@@ -13,22 +13,23 @@
       }
     },
     "error": {
-      "cannot_connect": "No se pudo conectar a la API",
-      "invalid_auth": "Credenciales de autenticación inválidas",
-      "unknown": "Ocurrió un error inesperado"
+      "cannot_connect": "No se pudo conectar con la API",
+      "invalid_auth": "Credenciales de autenticación no válidas",
+      "unknown": "Se produjo un error inesperado"
     }
   },
   "options": {
     "step": {
       "init": {
-        "title": "Configurar Opciones",
-        "description": "Configura las opciones avanzadas para Mammouth AI",
+        "title": "Configurar opciones",
+        "description": "Configura las opciones avanzadas de Mammouth AI",
         "data": {
-          "prompt": "Prompt del Sistema",
-          "max_tokens": "Número máximo de tokens",
+          "prompt": "Prompt del sistema",
+          "base_context": "Contexto base (personalidad, reglas de la casa, hechos estables — como las instrucciones personalizadas de un Proyecto de Claude)",
+          "max_tokens": "Máximo de tokens",
           "temperature": "Temperatura",
           "timeout": "Tiempo de espera (segundos)",
-          "llm_hass_api": "Habilitar acceso a la API de Home Assistant"
+          "llm_hass_api": "Permitir que la IA lea esta instancia de Home Assistant y cree/edite automatizaciones, scripts y paneles"
         }
       }
     }

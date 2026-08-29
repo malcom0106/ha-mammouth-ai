@@ -4,7 +4,7 @@
     "step": {
       "user": {
         "title": "Mammouth AI instellen",
-        "description": "Configureer je Mammouth AI integratie",
+        "description": "Configureer je Mammouth AI-integratie",
         "data": {
           "api_key": "API-sleutel",
           "base_url": "Basis-URL",
@@ -14,7 +14,7 @@
     },
     "error": {
       "cannot_connect": "Kan geen verbinding maken met de API",
-      "invalid_auth": "Ongeldige authenticatiereferenties",
+      "invalid_auth": "Ongeldige aanmeldgegevens",
       "unknown": "Er is een onverwachte fout opgetreden"
     }
   },
@@ -22,13 +22,14 @@
     "step": {
       "init": {
         "title": "Opties configureren",
-        "description": "Geavanceerde opties voor Mammouth AI configureren",
+        "description": "Configureer de geavanceerde opties voor Mammouth AI",
         "data": {
-          "prompt": "Systeem Prompt",
+          "prompt": "Systeemprompt",
+          "base_context": "Basiscontext (persona, huisregels, vaste feiten — zoals de aangepaste instructies van een Claude-project)",
           "max_tokens": "Maximum aantal tokens",
           "temperature": "Temperatuur",
           "timeout": "Time-out (seconden)",
-          "llm_hass_api": "Home Assistant API-toegang inschakelen"
+          "llm_hass_api": "Sta de AI toe deze Home Assistant-instantie te lezen en automatiseringen, scripts en dashboards aan te maken/bewerken"
         }
       }
     }

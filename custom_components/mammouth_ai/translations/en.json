@@ -25,10 +25,11 @@
         "description": "Configure advanced options for Mammouth AI",
         "data": {
           "prompt": "System Prompt",
+          "base_context": "Base context (persona, house rules, stable facts — like a Claude Project's custom instructions)",
           "max_tokens": "Maximum Tokens",
           "temperature": "Temperature",
           "timeout": "Timeout (seconds)",
-          "llm_hass_api": "Enable Home Assistant API access"
+          "llm_hass_api": "Allow the AI to read this Home Assistant instance and create/edit automations, scripts and dashboards"
         }
       }
     }

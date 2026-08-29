@@ -15,23 +15,21 @@
     "error": {
       "cannot_connect": "Impossible de se connecter à l'API",
       "invalid_auth": "Identifiants d'authentification invalides",
-      "unknown": "Une erreur inattendue s'est produite"
+      "unknown": "Une erreur inattendue est survenue"
     }
   },
   "options": {
     "step": {
       "init": {
-        "title": "Configurer les Options",
-        "description": "Configurez les options avancées pour Mammouth AI",
+        "title": "Configurer les options",
+        "description": "Configurez les options avancées de Mammouth AI",
         "data": {
-          "prompt": "Prompt Système",
+          "prompt": "Prompt système",
+          "base_context": "Contexte de base (persona, règles de la maison, faits stables — comme les instructions personnalisées d'un Projet Claude)",
           "max_tokens": "Nombre maximum de tokens",
           "temperature": "Température",
           "timeout": "Délai d'attente (secondes)",
-          "llm_hass_api": "Activer l'accès à l'API Home Assistant",
-          "enable_memory": "Activer la mémoire conversationnelle",
-          "max_messages": "Nombre maximum de messages en mémoire",
-          "memory_timeout": "Durée de vie de la mémoire (heures)"
+          "llm_hass_api": "Autoriser l'IA à lire cette instance Home Assistant et à créer/modifier des automatisations, scripts et dashboards"
         }
       }
     }

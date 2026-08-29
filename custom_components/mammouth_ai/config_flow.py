@@ -8,42 +8,19 @@ from typing import Any
 import aiohttp
 import voluptuous as vol
 from homeassistant import config_entries
-from homeassistant.config_entries import ConfigFlowResult
 from homeassistant.const import CONF_API_KEY
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import selector
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from .const import (
-    CONF_BASE_URL,
-    CONF_ENABLE_MEMORY,
-    CONF_ENTITY_DOMAINS,
-    CONF_LLM_HASS_API,
-    CONF_MAX_ENTITIES,
-    CONF_MAX_MESSAGES,
-    CONF_MAX_TOKENS,
-    CONF_MEMORY_TIMEOUT,
-    CONF_MINIMAL_ATTRIBUTES,
-    CONF_MODEL,
-    CONF_PROMPT,
-    CONF_SMART_FILTERING,
-    CONF_TEMPERATURE,
-    CONF_TIMEOUT,
-    DEFAULT_BASE_URL,
-    DEFAULT_ENABLE_MEMORY,
-    DEFAULT_ENTITY_DOMAINS,
-    DEFAULT_MAX_ENTITIES,
-    DEFAULT_MAX_MESSAGES,
-    DEFAULT_MAX_TOKENS,
-    DEFAULT_MEMORY_TIMEOUT,
-    DEFAULT_MINIMAL_ATTRIBUTES,
-    DEFAULT_MODEL,
-    DEFAULT_PROMPT,
-    DEFAULT_SMART_FILTERING,
-    DEFAULT_TEMPERATURE,
-    DEFAULT_TIMEOUT,
-    DOMAIN,
-)
+from .const import (CONF_BASE_CONTEXT, CONF_BASE_URL, CONF_LLM_HASS_API,
+                    CONF_MAX_TOKENS, CONF_MODEL, CONF_PROMPT,
+                    CONF_TEMPERATURE, CONF_TIMEOUT, DEFAULT_BASE_CONTEXT,
+                    DEFAULT_BASE_URL, DEFAULT_MAX_TOKENS, DEFAULT_MODEL,
+                    DEFAULT_PROMPT, DEFAULT_TEMPERATURE, DEFAULT_TIMEOUT,
+                    DOMAIN)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -67,7 +44,7 @@ class MammouthConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
-    ) -> ConfigFlowResult:
+    ) -> FlowResult:
         """Handle the initial step."""
         if user_input is None:
             return self.async_show_form(
@@ -92,7 +69,9 @@ class MammouthConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             _LOGGER.exception("Unexpected exception")
             errors["base"] = "unknown"
         else:
-            return self.async_create_entry(title=info["title"], data=user_input)
+            return self.async_create_entry(
+                title=info["title"], data=user_input
+            )
 
         return self.async_show_form(
             step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
@@ -112,10 +91,11 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
     def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
         """Initialize options flow."""
+        self._config_entry = config_entry
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
-    ) -> ConfigFlowResult:
+    ) -> FlowResult:
         """Manage the options."""
         if user_input is not None:
             return self.async_create_entry(title="", data=user_input)
@@ -126,85 +106,40 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 {
                     vol.Optional(
                         CONF_PROMPT,
-                        default=self.config_entry.options.get(
+                        default=self._config_entry.options.get(
                             CONF_PROMPT, DEFAULT_PROMPT
                         ),
                     ): str,
                     vol.Optional(
+                        CONF_BASE_CONTEXT,
+                        default=self._config_entry.options.get(
+                            CONF_BASE_CONTEXT, DEFAULT_BASE_CONTEXT
+                        ),
+                    ): selector.TextSelector(
+                        selector.TextSelectorConfig(multiline=True)
+                    ),
+                    vol.Optional(
                         CONF_MAX_TOKENS,
-                        default=self.config_entry.options.get(
+                        default=self._config_entry.options.get(
                             CONF_MAX_TOKENS, DEFAULT_MAX_TOKENS
                         ),
                     ): cv.positive_int,
                     vol.Optional(
                         CONF_TEMPERATURE,
-                        default=self.config_entry.options.get(
+                        default=self._config_entry.options.get(
                             CONF_TEMPERATURE, DEFAULT_TEMPERATURE
                         ),
                     ): vol.All(vol.Coerce(float), vol.Range(min=0.0, max=2.0)),
                     vol.Optional(
                         CONF_TIMEOUT,
-                        default=self.config_entry.options.get(
+                        default=self._config_entry.options.get(
                             CONF_TIMEOUT, DEFAULT_TIMEOUT
                         ),
                     ): cv.positive_int,
                     vol.Optional(
                         CONF_LLM_HASS_API,
-                        default=self.config_entry.options.get(CONF_LLM_HASS_API, True),
-                    ): cv.boolean,
-                    vol.Optional(
-                        CONF_ENABLE_MEMORY,
-                        default=self.config_entry.options.get(
-                            CONF_ENABLE_MEMORY, DEFAULT_ENABLE_MEMORY
-                        ),
-                    ): cv.boolean,
-                    vol.Optional(
-                        CONF_MAX_MESSAGES,
-                        default=self.config_entry.options.get(
-                            CONF_MAX_MESSAGES, DEFAULT_MAX_MESSAGES
-                        ),
-                    ): cv.positive_int,
-                    vol.Optional(
-                        CONF_MEMORY_TIMEOUT,
-                        default=self.config_entry.options.get(
-                            CONF_MEMORY_TIMEOUT, DEFAULT_MEMORY_TIMEOUT
-                        ),
-                    ): cv.positive_int,
-                    vol.Optional(
-                        CONF_MAX_ENTITIES,
-                        default=self.config_entry.options.get(
-                            CONF_MAX_ENTITIES, DEFAULT_MAX_ENTITIES
-                        ),
-                    ): cv.positive_int,
-                    vol.Optional(
-                        CONF_ENTITY_DOMAINS,
-                        default=self.config_entry.options.get(
-                            CONF_ENTITY_DOMAINS, DEFAULT_ENTITY_DOMAINS
-                        ),
-                    ): cv.multi_select(
-                        {
-                            "sensor": "Sensor",
-                            "binary_sensor": "Binary Sensor",
-                            "light": "Light",
-                            "switch": "Switch",
-                            "climate": "Climate",
-                            "cover": "Cover",
-                            "lock": "Lock",
-                            "camera": "Camera",
-                            "media_player": "Media Player",
-                            "vacuum": "Vacuum",
-                        }
-                    ),
-                    vol.Optional(
-                        CONF_SMART_FILTERING,
-                        default=self.config_entry.options.get(
-                            CONF_SMART_FILTERING, DEFAULT_SMART_FILTERING
-                        ),
-                    ): cv.boolean,
-                    vol.Optional(
-                        CONF_MINIMAL_ATTRIBUTES,
-                        default=self.config_entry.options.get(
-                            CONF_MINIMAL_ATTRIBUTES, DEFAULT_MINIMAL_ATTRIBUTES
+                        default=self._config_entry.options.get(
+                            CONF_LLM_HASS_API, True
                         ),
                     ): cv.boolean,
                 }
@@ -221,7 +156,9 @@ class InvalidAuth(Exception):
     """Error to indicate there is invalid auth."""
 
 
-async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str, Any]:
+async def validate_input(
+    hass: HomeAssistant, data: dict[str, Any]
+) -> dict[str, Any]:
     """Validate the user input allows us to connect."""
     session = async_get_clientsession(hass)
 

@@ -4,7 +4,7 @@
     "step": {
       "user": {
         "title": "Mammouth AI einrichten",
-        "description": "Konfiguriere deine Mammouth AI Integration",
+        "description": "Konfiguriere deine Mammouth AI-Integration",
         "data": {
           "api_key": "API-Schlüssel",
           "base_url": "Basis-URL",
@@ -22,13 +22,14 @@
     "step": {
       "init": {
         "title": "Optionen konfigurieren",
-        "description": "Erweiterte Optionen für Mammouth AI konfigurieren",
+        "description": "Konfiguriere die erweiterten Optionen für Mammouth AI",
         "data": {
           "prompt": "System-Prompt",
+          "base_context": "Basiskontext (Persona, Hausregeln, stabile Fakten — wie die benutzerdefinierten Anweisungen eines Claude-Projekts)",
           "max_tokens": "Maximale Token-Anzahl",
           "temperature": "Temperatur",
           "timeout": "Zeitüberschreitung (Sekunden)",
-          "llm_hass_api": "Home Assistant API-Zugang aktivieren"
+          "llm_hass_api": "Der KI erlauben, diese Home Assistant-Instanz zu lesen und Automatisierungen, Skripte und Dashboards zu erstellen/bearbeiten"
         }
       }
     }

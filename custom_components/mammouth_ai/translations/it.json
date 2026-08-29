@@ -21,14 +21,15 @@
   "options": {
     "step": {
       "init": {
-        "title": "Configura Opzioni",
-        "description": "Configura le opzioni avanzate per Mammouth AI",
+        "title": "Configura opzioni",
+        "description": "Configura le opzioni avanzate di Mammouth AI",
         "data": {
-          "prompt": "Prompt di Sistema",
+          "prompt": "Prompt di sistema",
+          "base_context": "Contesto di base (persona, regole della casa, fatti stabili — come le istruzioni personalizzate di un Progetto Claude)",
           "max_tokens": "Numero massimo di token",
           "temperature": "Temperatura",
           "timeout": "Timeout (secondi)",
-          "llm_hass_api": "Abilita accesso API Home Assistant"
+          "llm_hass_api": "Consenti all'IA di leggere questa istanza di Home Assistant e creare/modificare automazioni, script e dashboard"
         }
       }
     }

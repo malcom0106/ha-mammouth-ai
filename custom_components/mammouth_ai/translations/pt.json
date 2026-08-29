@@ -3,8 +3,8 @@
   "config": {
     "step": {
       "user": {
-        "title": "Configurar Mammouth AI",
-        "description": "Configure sua integração Mammouth AI",
+        "title": "Configurar o Mammouth AI",
+        "description": "Configure a sua integração Mammouth AI",
         "data": {
           "api_key": "Chave de API",
           "base_url": "URL base",
@@ -13,7 +13,7 @@
       }
     },
     "error": {
-      "cannot_connect": "Falha ao conectar com a API",
+      "cannot_connect": "Falha ao conectar à API",
       "invalid_auth": "Credenciais de autenticação inválidas",
       "unknown": "Ocorreu um erro inesperado"
     }
@@ -21,14 +21,15 @@
   "options": {
     "step": {
       "init": {
-        "title": "Configurar Opções",
-        "description": "Configure as opções avançadas para Mammouth AI",
+        "title": "Configurar opções",
+        "description": "Configure as opções avançadas do Mammouth AI",
         "data": {
-          "prompt": "Prompt do Sistema",
+          "prompt": "Prompt do sistema",
+          "base_context": "Contexto base (persona, regras da casa, factos estáveis — como as instruções personalizadas de um Projeto Claude)",
           "max_tokens": "Número máximo de tokens",
           "temperature": "Temperatura",
-          "timeout": "Timeout (segundos)",
-          "llm_hass_api": "Ativar acesso à API do Home Assistant"
+          "timeout": "Tempo limite (segundos)",
+          "llm_hass_api": "Permitir que a IA leia esta instância do Home Assistant e crie/edite automações, scripts e painéis"
         }
       }
     }
